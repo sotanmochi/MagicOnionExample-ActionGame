@@ -1,0 +1,121 @@
+# ======================================== #
+# Initial setting (All assets are ignored)
+# ======================================== #
+Assets/*
+
+# ======================== #
+# Project specific setting
+# ======================== #
+!Assets/Scripts/
+!Assets/Plugins/
+!Assets/Scripts.meta
+!Assets/Plugins.meta
+Assets/Scripts/*
+Assets/Plugins/*
+
+# ======================================= #
+# Third party assets (Not ignored assets)
+# ======================================= #
+!Assets/Scripts/MagicOnion/
+!Assets/Scripts/MessagePack/
+!Assets/Scripts/MagicOnion.meta
+!Assets/Scripts/MessagePack.meta
+!Assets/Plugins/Google.Protobuf/
+!Assets/Plugins/Grpc.Core/
+!Assets/Plugins/Grpc.Core.Api/
+!Assets/Plugins/System.Interactive.Async/
+!Assets/Plugins/Google.Protobuf.meta
+!Assets/Plugins/Grpc.Core.meta
+!Assets/Plugins/Grpc.Core.Api.meta
+!Assets/Plugins/System.Interactive.Async.meta
+
+# ============================================================== #
+# Project specific assets and my own assets (Not ignored assets)
+# ============================================================== #
+!Assets/MagicOnionActionGame/
+!Assets/MagicOnionActionGame.meta
+
+!Assets/StreamingAssets/
+!Assets/StreamingAssets.meta
+!Assets/_ApplicationAssets/
+!Assets/_ApplicationAssets.meta
+!Assets/_GameAssets/
+!Assets/_GameAssets.meta
+!Assets/_SharedAssets/
+!Assets/_SharedAssets.meta
+!Assets/_SharedThirdPartyAssets/
+!Assets/_SharedThirdPartyAssets.meta
+
+# =============== #
+# Unity generated #
+# =============== #
+[Tt]emp/
+[Oo]bj/
+[Bb]in/
+[Bb]uilds/
+[Bb]uild/
+[Ll]ibrary/
+[Aa]pp/
+UWP/
+WindowsStoreApp/
+UnityGenerated/
+UnityPackageManager/
+.out/
+project.json
+project.lock.json
+*.package
+
+# ============ #
+# Certificates #
+# ============ #
+*.cert
+*.privkey
+*.pfx
+*.pfx.meta
+
+# ============================ #
+# Visual Studio Code generated #
+# ============================ #
+.vscode/
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+.vs/
+ExportedObj/
+obj/
+*.svd
+*.userprefs
+/*.csproj
+*.csproj
+*.pidb
+*.suo
+/*.sln
+*.sln
+*.user
+*.unityproj
+*.ipch
+*.opensdf
+*.sdf
+*.tlog
+*.log
+*.idb
+*.opendb
+
+# Gradle cache directory
+.gradle/
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Unity3D Generated File On Crash Reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.unitypackage
+
+# Crashlytics generated file
+crashlytics-build.properties
