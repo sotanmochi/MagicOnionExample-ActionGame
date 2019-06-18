@@ -60,10 +60,18 @@ namespace MagicOnionExample
 
         public static async void DisconnectAsync()
         {
+            List<Task> taskList = new List<Task>();
             foreach (IHubClient hubClient in _hubClientSet)
             {
-                await hubClient.DisconnectAsync();
+                taskList.Add(Task.Run(() =>
+                {
+                    hubClient.DisconnectAsync();
+                }));
             }
+            await Task.WhenAll(taskList);
+
+            _hubClientSet.Clear();
+
             await _channel.ShutdownAsync();
         }
 
