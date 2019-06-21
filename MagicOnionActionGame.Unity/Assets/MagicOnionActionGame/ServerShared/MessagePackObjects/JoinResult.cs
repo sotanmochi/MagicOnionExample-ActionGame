@@ -9,7 +9,7 @@ namespace MagicOnionExample.ActionGame.ServerShared.MessagePackObjects
     public class JoinResult
     {
         [Key(0)]
-        public int LocalPlayerId { get; set; }
+        public Player LocalPlayer { get; set; }
         [Key(1)]
         public Player[] RoomPlayers { get; set; }
     }

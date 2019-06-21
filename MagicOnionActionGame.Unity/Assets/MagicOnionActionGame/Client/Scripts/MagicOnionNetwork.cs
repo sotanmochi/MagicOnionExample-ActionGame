@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -13,10 +14,7 @@ namespace MagicOnionExample
 
     public class MagicOnionNetwork
     {
-        public static string Host = "localhost";
-        public static int Port = 12345;
-
-        public static int LocalPlayerId = -1;
+        public static Player LocalPlayer;
 
         public static bool IsConnected
         {
@@ -49,9 +47,14 @@ namespace MagicOnionExample
             connectionHandlerGameObject.AddComponent<MagicOnionConnectionHandler>();
         }
 
-        public static void Connect()
+        public static void Connect(string host, int port)
         {
-            _channel = new Channel(Host, Port, ChannelCredentials.Insecure);
+            Connect(host, port, ChannelCredentials.Insecure);
+        }
+
+        public static void Connect(string host, int port, ChannelCredentials credentials)
+        {
+            _channel = new Channel(host, port, credentials);
             foreach (IHubClient hubClient in _hubClientSet)
             {
                 hubClient.Connect(_channel);

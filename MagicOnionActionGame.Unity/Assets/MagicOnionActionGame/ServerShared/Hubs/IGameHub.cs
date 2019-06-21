@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-
 using MagicOnion;
 using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
 

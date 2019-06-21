@@ -9,7 +9,7 @@ namespace MagicOnionExample.ActionGame.ServerShared.MessagePackObjects
     public class Player
     {
         [Key(0)]
-        public int Id { get; set; }
+        public int ActorNumber { get; set; }
         [Key(1)]
         public string Name { get; set; }
     }

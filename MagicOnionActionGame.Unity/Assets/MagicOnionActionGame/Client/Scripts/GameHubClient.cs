@@ -14,7 +14,7 @@ namespace MagicOnionExample.ActionGame.Client
         void Awake()
         {
             MagicOnionNetwork.RegisterHubClientAsync(this);
-            MagicOnionNetwork.Connect();
+            MagicOnionNetwork.Connect("localhost", 12345);
         }
 
         void Start()
@@ -29,15 +29,15 @@ namespace MagicOnionExample.ActionGame.Client
         public async Task<int> JoinAsync(string roomName, string playerName)
         {
             JoinResult result = await _hubClient.JoinAsync(roomName, playerName);
-            if (result.LocalPlayerId >= 0)
+            if (result.LocalPlayer.ActorNumber >= 0)
             {
-                MagicOnionNetwork.LocalPlayerId = result.LocalPlayerId;
-                Debug.Log("Local player id: " + result.LocalPlayerId);
+                MagicOnionNetwork.LocalPlayer = result.LocalPlayer;
+                Debug.Log("Local player id: " + result.LocalPlayer.ActorNumber);
             }
 
             Debug.Log("RoomPlayers: " + result.RoomPlayers.Length);
 
-            return result.LocalPlayerId;
+            return result.LocalPlayer.ActorNumber;
         }
 
         public async void LeaveAsync()
@@ -52,12 +52,12 @@ namespace MagicOnionExample.ActionGame.Client
 
         void IGameHubReceiver.OnJoin(Player player)
         {
-            Debug.Log("OnJoin - Player[" + player.Id + "]: " + player.Name);
+            Debug.Log("OnJoin - Player[" + player.ActorNumber + "]: " + player.Name);
         }
 
         void IGameHubReceiver.OnLeave(Player player)
         {
-            Debug.Log("OnLeave - Player[" + player.Id + "]:" + player.Name);
+            Debug.Log("OnLeave - Player[" + player.ActorNumber + "]:" + player.Name);
         }
 
         #endregion

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Grpc.Core;
 using MagicOnion.Server.Hubs;
 using MagicOnionExample.ActionGame.ServerShared.Hubs;
 using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
@@ -18,35 +19,36 @@ namespace MagicOnionExample.ActionGame.Server
         public async Task<JoinResult> JoinAsync(string roomName, string playerName)
         {
             Guid connectionId = this.Context.ContextId;
-            
+            GrpcEnvironment.Logger.Debug("GameHub - ConnectionId: " + connectionId);
+
             if (storage != null)
             {
                 Player player = storage.Get(connectionId);
                 if (player != null)
                 {
-                    return new JoinResult() { LocalPlayerId = player.Id, RoomPlayers = storage.AllValues.ToArray() }; // Already joined
+                    return new JoinResult() { LocalPlayer = player, RoomPlayers = storage.AllValues.ToArray() }; // Already joined
                 }
             }
 
             bool success = false;
-            self = new Player() { Id = -1, Name = playerName };
+            self = new Player() { ActorNumber = -1, Name = playerName };
             (success, room, storage) = await Group.TryAddAsync(roomName, MAX_PLAYERS, true, self);
 
             if (!success)
             {
-                return new JoinResult() { LocalPlayerId = -1, RoomPlayers = (Player[])Enumerable.Empty<Player>() }; // Could not join
+                return new JoinResult() { LocalPlayer = self, RoomPlayers = (Player[])Enumerable.Empty<Player>() }; // Could not join
             }
 
-            self.Id = FindNewPlayerId(); // Update player.Id
+            self.ActorNumber = FindNewActorNumber(); // Update player.ActorNumber
             // BroadcastExceptSelf(room).OnJoin(self);
             Broadcast(room).OnJoin(self);
 
-            return new JoinResult() { LocalPlayerId = self.Id, RoomPlayers = storage.AllValues.ToArray() };
+            return new JoinResult() { LocalPlayer = self, RoomPlayers = storage.AllValues.ToArray() };
         }
 
-        private int FindNewPlayerId()
+        private int FindNewActorNumber()
         {
-            var playerList = storage.AllValues.ToDictionary(player => player.Id);
+            var playerList = storage.AllValues.ToDictionary(player => player.ActorNumber);
 
             for (int id = 0; id < MAX_PLAYERS; id++)
             {
