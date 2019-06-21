@@ -28,20 +28,38 @@ namespace MagicOnionExample.ActionGame.Client
 
         public async Task<int> JoinAsync(string roomName, string playerName)
         {
-            JoinResult result = await _hubClient.JoinAsync(roomName, playerName);
-            if (result.LocalPlayer.ActorNumber >= 0)
+            int actorNumber = -1;
+
+            if (MagicOnionNetwork.LocalPlayer != null && MagicOnionNetwork.LocalPlayer.ActorNumber >= 0)
             {
-                MagicOnionNetwork.LocalPlayer = result.LocalPlayer;
-                Debug.Log("Local player id: " + result.LocalPlayer.ActorNumber);
+                actorNumber = MagicOnionNetwork.LocalPlayer.ActorNumber;
+                Debug.Log("Already joined!!");
+                Debug.Log("LocalPlayer.ActorNumber: " + actorNumber);
+                Debug.Log("LocalPlayer.UserId: " + MagicOnionNetwork.LocalPlayer.UserId);
+            }
+            else
+            {
+                string userId = System.Guid.NewGuid().ToString();
+                Debug.Log("Generated UserId: " + userId);
+
+                JoinResult result = await _hubClient.JoinAsync(roomName, playerName, userId);
+                if (result.LocalPlayer.ActorNumber >= 0)
+                {
+                    MagicOnionNetwork.LocalPlayer = result.LocalPlayer;
+                    Debug.Log("LocalPlayer.ActorNumber: " + result.LocalPlayer.ActorNumber);
+                }
+
+                Debug.Log("RoomPlayers: " + result.RoomPlayers.Length);
+
+                actorNumber = result.LocalPlayer.ActorNumber;
             }
 
-            Debug.Log("RoomPlayers: " + result.RoomPlayers.Length);
-
-            return result.LocalPlayer.ActorNumber;
+            return actorNumber;
         }
 
         public async void LeaveAsync()
         {
+            MagicOnionNetwork.LocalPlayer = null;
             await _hubClient.LeaveAsync();
             Debug.Log("LeaveAsync()");
         }

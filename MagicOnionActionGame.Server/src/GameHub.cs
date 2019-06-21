@@ -16,7 +16,7 @@ namespace MagicOnionExample.ActionGame.Server
         Player self;
         IInMemoryStorage<Player> storage;
 
-        public async Task<JoinResult> JoinAsync(string roomName, string playerName)
+        public async Task<JoinResult> JoinAsync(string roomName, string playerName, string userId)
         {
             Guid connectionId = this.Context.ContextId;
             GrpcEnvironment.Logger.Debug("GameHub - ConnectionId: " + connectionId);
@@ -31,7 +31,7 @@ namespace MagicOnionExample.ActionGame.Server
             }
 
             bool success = false;
-            self = new Player() { ActorNumber = -1, Name = playerName };
+            self = new Player() { ActorNumber = -1, Name = playerName, UserId = userId };
             (success, room, storage) = await Group.TryAddAsync(roomName, MAX_PLAYERS, true, self);
 
             if (!success)

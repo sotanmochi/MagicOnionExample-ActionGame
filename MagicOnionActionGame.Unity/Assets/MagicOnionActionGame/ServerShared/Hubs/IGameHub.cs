@@ -6,7 +6,7 @@ namespace MagicOnionExample.ActionGame.ServerShared.Hubs
 {
     public interface IGameHub : IStreamingHub<IGameHub, IGameHubReceiver>
     {
-        Task<JoinResult> JoinAsync(string roomName, string playerName);
+        Task<JoinResult> JoinAsync(string roomName, string playerName, string userId);
         Task LeaveAsync();
     }
 }
