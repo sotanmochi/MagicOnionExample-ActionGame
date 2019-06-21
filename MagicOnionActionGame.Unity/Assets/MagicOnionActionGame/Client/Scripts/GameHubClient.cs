@@ -13,8 +13,7 @@ namespace MagicOnionExample.ActionGame.Client
 
         void Awake()
         {
-            MagicOnionNetwork.RegisterHubClientAsync(this);
-            MagicOnionNetwork.Connect("localhost", 12345);
+            MagicOnionNetwork.RegisterHubClient(this);
         }
 
         void Start()
@@ -29,6 +28,12 @@ namespace MagicOnionExample.ActionGame.Client
         public async Task<int> JoinAsync(string roomName, string playerName)
         {
             int actorNumber = -1;
+
+            if (!MagicOnionNetwork.IsConnected)
+            {
+                Debug.Log("Channel is not ready!!");
+                return -1;
+            }
 
             if (MagicOnionNetwork.LocalPlayer != null && MagicOnionNetwork.LocalPlayer.ActorNumber >= 0)
             {

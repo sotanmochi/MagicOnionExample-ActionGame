@@ -20,7 +20,7 @@ namespace MagicOnionExample
         {
             get
             {
-                return (_channel.State == ChannelState.Ready) ? true : false;
+                return ((_channel != null) && (_channel.State == ChannelState.Ready)) ? true : false;
             }
         }
 
@@ -28,7 +28,7 @@ namespace MagicOnionExample
         {
             get
             {
-                return _channel.State;
+                return (_channel != null) ? _channel.State : ChannelState.Idle;
             }
         }
 
@@ -54,10 +54,13 @@ namespace MagicOnionExample
 
         public static void Connect(string host, int port, ChannelCredentials credentials)
         {
-            _channel = new Channel(host, port, credentials);
-            foreach (IHubClient hubClient in _hubClientSet)
+            if (!IsConnected)
             {
-                hubClient.Connect(_channel);
+                _channel = new Channel(host, port, credentials);
+                foreach (IHubClient hubClient in _hubClientSet)
+                {
+                    hubClient.Connect(_channel);
+                }
             }
         }
 
@@ -75,10 +78,13 @@ namespace MagicOnionExample
 
             _hubClientSet.Clear();
 
-            await _channel.ShutdownAsync();
+            if (_channel != null)
+            {
+                await _channel.ShutdownAsync();
+            }
         }
 
-        public static bool RegisterHubClientAsync(IHubClient client)
+        public static bool RegisterHubClient(IHubClient client)
         {
             bool result = _hubClientSet.Add(client);
             if (result && (_channel != null))

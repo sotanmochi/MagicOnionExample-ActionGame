@@ -7,6 +7,10 @@ namespace MagicOnionExample.ActionGame.Client
     {
         [SerializeField] GameHubClient Client;
 
+        [SerializeField] InputField Host;
+        [SerializeField] InputField Port;
+        [SerializeField] Button ConnectButton;
+
         [SerializeField] InputField RoomName;
         [SerializeField] InputField PlayerName;
         [SerializeField] Button JoinButton;
@@ -14,8 +18,18 @@ namespace MagicOnionExample.ActionGame.Client
 
         void Start()
         {
+            ConnectButton.onClick.AddListener(OnConnectClicked);
             JoinButton.onClick.AddListener(OnJoinClicked);
             LeaveButton.onClick.AddListener(OnLeaveClicked);
+        }
+
+        void OnConnectClicked()
+        {
+            MagicOnionNetwork.Connect(Host.text, int.Parse(Port.text));
+            
+            Debug.Log("*** OnConnectClicked @AppUI ***");
+            Debug.Log("Connected: " + MagicOnionNetwork.IsConnected);
+            Debug.Log("State: " + MagicOnionNetwork.ConnectionState);
         }
 
         async void OnJoinClicked()
