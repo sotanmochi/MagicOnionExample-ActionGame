@@ -116,7 +116,6 @@ namespace MagicOnionExample
             {
                 Debug.Log("Already joined!!");
                 Debug.Log("LocalPlayer.ActorNumber: " + LocalPlayer.ActorNumber);
-                Debug.Log("LocalPlayer.UserId: " + LocalPlayer.UserId);
             }
             else
             {
@@ -130,7 +129,6 @@ namespace MagicOnionExample
                 }
                 JoinResult[] result = await Task.WhenAll(taskList);
 
-                Debug.Log("Num of JoinResults: " + result.Length);
                 if (result.Length > 0)
                 {
                     JoinResult joinResult = result[0];
@@ -142,6 +140,10 @@ namespace MagicOnionExample
                         LocalPlayer = joinResult.LocalPlayer;
                         Debug.Log("LocalPlayer.ActorNumber: " + joinResult.LocalPlayer.ActorNumber);
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -150,17 +152,20 @@ namespace MagicOnionExample
 
         public static async void LeaveAsync()
         {
-            List<Task> taskList = new List<Task>();
-            foreach (IHubClient hubClient in _hubClientSet)
+            if (LocalPlayer != null)
             {
-                taskList.Add(Task.Run(() =>
+                List<Task> taskList = new List<Task>();
+                foreach (IHubClient hubClient in _hubClientSet)
                 {
-                    hubClient.LeaveHubAsync();
-                }));
-            }
-            await Task.WhenAll(taskList);
+                    taskList.Add(Task.Run(() =>
+                    {
+                        hubClient.LeaveHubAsync();
+                    }));
+                }
+                await Task.WhenAll(taskList);
 
-            MagicOnionNetwork.LocalPlayer = null;
+                LocalPlayer = null;
+            }
         }
     }
 }

@@ -38,8 +38,7 @@ namespace MagicOnionExample.ActionGame.Client
             bool result = await MagicOnionNetwork.JoinAsync(RoomName.text, PlayerName.text, userId);
 
             Debug.Log("*** OnJoinClicked @AppUI ***");
-            Debug.Log("Join result: " + userId);
-            Debug.Log("Generated UserId: " + userId);
+            Debug.Log("Join success: " + result);
         }
 
         void OnLeaveClicked()
