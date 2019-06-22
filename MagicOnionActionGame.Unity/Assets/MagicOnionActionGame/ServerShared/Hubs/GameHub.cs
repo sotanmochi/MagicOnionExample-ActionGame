@@ -9,4 +9,10 @@ namespace MagicOnionExample.ActionGame.ServerShared.Hubs
         Task<JoinResult> JoinAsync(string roomName, string playerName, string userId);
         Task LeaveAsync();
     }
+
+    public interface IGameHubReceiver
+    {
+        void OnJoin(Player player);
+        void OnLeave(Player player);
+    }
 }

@@ -34,12 +34,17 @@ namespace MagicOnionExample.ActionGame.Client
 
         async void OnJoinClicked()
         {
-            await Client.JoinAsync(RoomName.text, PlayerName.text);
+            string userId = System.Guid.NewGuid().ToString();
+            bool result = await MagicOnionNetwork.JoinAsync(RoomName.text, PlayerName.text, userId);
+
+            Debug.Log("*** OnJoinClicked @AppUI ***");
+            Debug.Log("Join result: " + userId);
+            Debug.Log("Generated UserId: " + userId);
         }
 
         void OnLeaveClicked()
         {
-            Client.LeaveAsync();
+            MagicOnionNetwork.LeaveAsync();
         }
     }
 }

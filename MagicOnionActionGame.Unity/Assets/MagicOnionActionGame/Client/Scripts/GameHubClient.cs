@@ -9,7 +9,7 @@ namespace MagicOnionExample.ActionGame.Client
 {
     public class GameHubClient : MonoBehaviour, IHubClient, IGameHubReceiver
     {
-        IGameHub _hubClient;
+        IGameHub _streamingHub;
 
         void Awake()
         {
@@ -23,56 +23,6 @@ namespace MagicOnionExample.ActionGame.Client
             Debug.Log("State: " + MagicOnionNetwork.ConnectionState);
         }
 
-        #region Client -> Server (Streaming)
-
-        public async Task<int> JoinAsync(string roomName, string playerName)
-        {
-            int actorNumber = -1;
-
-            if (!MagicOnionNetwork.IsConnected)
-            {
-                Debug.Log("Channel is not ready!!");
-                return -1;
-            }
-
-            if (MagicOnionNetwork.LocalPlayer != null && MagicOnionNetwork.LocalPlayer.ActorNumber >= 0)
-            {
-                actorNumber = MagicOnionNetwork.LocalPlayer.ActorNumber;
-                Debug.Log("Already joined!!");
-                Debug.Log("LocalPlayer.ActorNumber: " + actorNumber);
-                Debug.Log("LocalPlayer.UserId: " + MagicOnionNetwork.LocalPlayer.UserId);
-            }
-            else
-            {
-                string userId = System.Guid.NewGuid().ToString();
-                Debug.Log("Generated UserId: " + userId);
-
-                JoinResult result = await _hubClient.JoinAsync(roomName, playerName, userId);
-                if (result.LocalPlayer.ActorNumber >= 0)
-                {
-                    MagicOnionNetwork.LocalPlayer = result.LocalPlayer;
-                    Debug.Log("LocalPlayer.ActorNumber: " + result.LocalPlayer.ActorNumber);
-                }
-
-                Debug.Log("RoomPlayers: " + result.RoomPlayers.Length);
-
-                actorNumber = result.LocalPlayer.ActorNumber;
-            }
-
-            return actorNumber;
-        }
-
-        public async void LeaveAsync()
-        {
-            MagicOnionNetwork.LocalPlayer = null;
-            await _hubClient.LeaveAsync();
-            Debug.Log("LeaveAsync()");
-        }
-
-        #endregion
-
-        #region Server -> Client (Streaming)
-
         void IGameHubReceiver.OnJoin(Player player)
         {
             Debug.Log("OnJoin - Player[" + player.ActorNumber + "]: " + player.Name);
@@ -83,16 +33,24 @@ namespace MagicOnionExample.ActionGame.Client
             Debug.Log("OnLeave - Player[" + player.ActorNumber + "]:" + player.Name);
         }
 
-        #endregion
-
-        void IHubClient.Connect(Channel channel)
+        void IHubClient.ConnectHub(Channel channel)
         {
-            _hubClient = StreamingHubClient.Connect<IGameHub, IGameHubReceiver>(channel, this);
+            _streamingHub = StreamingHubClient.Connect<IGameHub, IGameHubReceiver>(channel, this);
         }
 
-        async Task IHubClient.DisconnectAsync()
+        async Task IHubClient.DisconnectHubAsync()
         {
-            await _hubClient.DisposeAsync();
+            await _streamingHub.DisposeAsync();
+        }
+
+        Task<JoinResult> IHubClient.JoinHubAsync(string roomName, string playerName, string userId)
+        {
+            return _streamingHub.JoinAsync(roomName, playerName, userId);
+        }
+
+        async void IHubClient.LeaveHubAsync()
+        {
+            await _streamingHub.LeaveAsync();
         }
     }
 }

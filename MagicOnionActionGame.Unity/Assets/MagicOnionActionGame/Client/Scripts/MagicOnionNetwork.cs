@@ -8,8 +8,10 @@ namespace MagicOnionExample
 {
     public interface IHubClient
     {
-        void Connect(Channel channel);
-        Task DisconnectAsync();
+        void ConnectHub(Channel channel);
+        Task DisconnectHubAsync();
+        Task<JoinResult> JoinHubAsync(string roomName, string playerName, string userId);
+        void LeaveHubAsync();
     }
 
     public class MagicOnionNetwork
@@ -59,7 +61,7 @@ namespace MagicOnionExample
                 _channel = new Channel(host, port, credentials);
                 foreach (IHubClient hubClient in _hubClientSet)
                 {
-                    hubClient.Connect(_channel);
+                    hubClient.ConnectHub(_channel);
                 }
             }
         }
@@ -71,7 +73,7 @@ namespace MagicOnionExample
             {
                 taskList.Add(Task.Run(() =>
                 {
-                    hubClient.DisconnectAsync();
+                    hubClient.DisconnectHubAsync();
                 }));
             }
             await Task.WhenAll(taskList);
@@ -89,7 +91,7 @@ namespace MagicOnionExample
             bool result = _hubClientSet.Add(client);
             if (result && (_channel != null))
             {
-                client.Connect(_channel);
+                client.ConnectHub(_channel);
             }
             return result;
         }
@@ -98,8 +100,67 @@ namespace MagicOnionExample
         {
             if (_hubClientSet.Remove(client))
             {
-                await client.DisconnectAsync();
+                await client.DisconnectHubAsync();
             }
+        }
+
+        public static async Task<bool> JoinAsync(string roomName, string playerName, string userId)
+        {
+            if (!IsConnected)
+            {
+                Debug.Log("Channel is not ready!!");
+                return false;
+            }
+
+            if (LocalPlayer != null && LocalPlayer.ActorNumber >= 0)
+            {
+                Debug.Log("Already joined!!");
+                Debug.Log("LocalPlayer.ActorNumber: " + LocalPlayer.ActorNumber);
+                Debug.Log("LocalPlayer.UserId: " + LocalPlayer.UserId);
+            }
+            else
+            {
+                List<Task<JoinResult>> taskList = new List<Task<JoinResult>>();
+                foreach (IHubClient hubClient in _hubClientSet)
+                {
+                    taskList.Add(Task<JoinResult>.Run<JoinResult>(() =>
+                    {
+                        return hubClient.JoinHubAsync(roomName, playerName, userId);
+                    }));
+                }
+                JoinResult[] result = await Task.WhenAll(taskList);
+
+                Debug.Log("Num of JoinResults: " + result.Length);
+                if (result.Length > 0)
+                {
+                    JoinResult joinResult = result[0];
+
+                    Debug.Log("RoomPlayers: " + joinResult.RoomPlayers.Length);
+
+                    if (joinResult.LocalPlayer.ActorNumber >= 0)
+                    {
+                        LocalPlayer = joinResult.LocalPlayer;
+                        Debug.Log("LocalPlayer.ActorNumber: " + joinResult.LocalPlayer.ActorNumber);
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public static async void LeaveAsync()
+        {
+            List<Task> taskList = new List<Task>();
+            foreach (IHubClient hubClient in _hubClientSet)
+            {
+                taskList.Add(Task.Run(() =>
+                {
+                    hubClient.LeaveHubAsync();
+                }));
+            }
+            await Task.WhenAll(taskList);
+
+            MagicOnionNetwork.LocalPlayer = null;
         }
     }
 }
