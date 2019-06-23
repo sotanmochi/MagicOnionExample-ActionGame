@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Linq;
 using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
 
@@ -11,18 +11,20 @@ namespace MagicOnionExample
         int MaxPlayers { get; }
         string Name { get; }
 
-        private Dictionary<string, Player> _playerList = new Dictionary<string, Player>();
+        private ConcurrentDictionary<string, Player> _playerList;
 
         public RoomInfo(string name)
         {
             this.Name = name;
             this.MaxPlayers = defaultMaxPlayers;
+            this._playerList = new ConcurrentDictionary<string, Player>();
         }
 
         public RoomInfo(string name, int maxPlayers)
         {
             this.Name = name;
             this.MaxPlayers = maxPlayers;
+            this._playerList = new ConcurrentDictionary<string, Player>();
         }
 
         public Player AddPlayer(string userId, string playerName)
@@ -32,20 +34,28 @@ namespace MagicOnionExample
 
             if (_playerList.Count < MaxPlayers)
             {
-                _playerList.Add(userId, player);
+                _playerList.TryAdd(userId, player);
             }
 
             return player;
         }
 
-        public void RemovePlayer(string userId)
+        public Player GetPlayer(string userId)
         {
-            _playerList.Remove(userId);
+            Player player = null;
+            _playerList.TryGetValue(userId, out player);
+            return player;
         }
 
         public Player[] GetPlayers()
         {
             return _playerList.Values.ToArray();
+        }
+
+        public void RemovePlayer(string userId)
+        {
+            Player player;
+            _playerList.TryRemove(userId, out player);
         }
 
         private int FindNewActorNumber()

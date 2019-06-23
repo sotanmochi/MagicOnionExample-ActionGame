@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
 
 namespace MagicOnionExample
@@ -7,32 +7,29 @@ namespace MagicOnionExample
     {
         public static readonly RoomManager Instance = new RoomManager();
 
-        private Dictionary<string, RoomInfo> _roomList;
-        private Dictionary<string, string> _playerRoomMap;
+        private ConcurrentDictionary<string, RoomInfo> _roomList;
+        private ConcurrentDictionary<string, string> _playerRoomMap;
 
         private RoomManager()
         {
-            _roomList = new Dictionary<string, RoomInfo>();
-            _playerRoomMap = new Dictionary<string, string>();
+            _roomList = new ConcurrentDictionary<string, RoomInfo>();
+            _playerRoomMap = new ConcurrentDictionary<string, string>();
         }
 
-        public RoomInfo CreateRoom(string roomName)
+        public bool CreateRoom(string roomName)
         {
-            RoomInfo roomInfo = new RoomInfo(roomName);
-            _roomList.Add(roomName, roomInfo);
-            return roomInfo;
+            return _roomList.TryAdd(roomName, new RoomInfo(roomName));
         }
 
-        public RoomInfo CreateRoom(string roomName, int maxPlayers)
+        public bool CreateRoom(string roomName, int maxPlayers)
         {
-            RoomInfo roomInfo = new RoomInfo(roomName, maxPlayers);
-            _roomList.Add(roomName, roomInfo);
-            return roomInfo;
+            return _roomList.TryAdd(roomName, new RoomInfo(roomName, maxPlayers));
         }
 
         public void RemoveRoom(string roomName)
         {
-            _roomList.Remove(roomName);
+            RoomInfo roomInfo;
+            _roomList.TryRemove(roomName, out roomInfo);
         }
 
         public RoomInfo GetRoom(string roomName)
@@ -44,18 +41,16 @@ namespace MagicOnionExample
 
         public Player JoinOrCreateRoom(string roomName, string playerName, string userId)
         {
-            RoomInfo roomInfo;
+            RoomInfo roomInfo = _roomList.GetOrAdd(roomName, new RoomInfo(roomName));
 
-            _roomList.TryGetValue(roomName, out roomInfo);
-            if (roomInfo == null)
+            Player player = roomInfo.GetPlayer(userId);
+            if (player == null)
             {
-                roomInfo = CreateRoom(roomName);
-            }
-
-            Player player = roomInfo.AddPlayer(userId, playerName);
-            if (player != null)
-            {
-                _playerRoomMap.Add(userId, roomName);
+                player = roomInfo.AddPlayer(userId, playerName);
+                if (player.ActorNumber >= 0)
+                {
+                    _playerRoomMap.TryAdd(userId, roomName);
+                }
             }
 
             return player;
@@ -66,14 +61,16 @@ namespace MagicOnionExample
             string roomName;
             RoomInfo roomInfo;
 
-            _playerRoomMap.TryGetValue(userId, out roomName);
-            _roomList.TryGetValue(roomName, out roomInfo);
-
-            if (roomInfo != null)
+            if (_playerRoomMap.ContainsKey(userId))
             {
-                roomInfo.RemovePlayer(userId);
+                _playerRoomMap.TryRemove(userId, out roomName);
+                _roomList.TryGetValue(roomName, out roomInfo);
+                
+                if (roomInfo != null)
+                {
+                    roomInfo.RemovePlayer(userId);
+                }
             }
-            _playerRoomMap.Remove(userId);
         }
     }
 }
