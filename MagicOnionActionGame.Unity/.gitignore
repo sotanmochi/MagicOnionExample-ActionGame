@@ -29,6 +29,13 @@ Assets/Plugins/*
 !Assets/Plugins/Grpc.Core.Api.meta
 !Assets/Plugins/System.Interactive.Async.meta
 
+!Assets/Standard Assets/
+!Assets/Standard Assets.meta
+!Assets/UnityChan/
+!Assets/UnityChan.meta
+!Assets/UnityChanTPK/
+!Assets/UnityChanTPK.meta
+
 # ============================================================== #
 # Project specific assets and my own assets (Not ignored assets)
 # ============================================================== #
