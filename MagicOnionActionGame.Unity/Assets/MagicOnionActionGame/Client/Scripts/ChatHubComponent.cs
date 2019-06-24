@@ -21,6 +21,9 @@ namespace MagicOnionExample.ActionGame.Client
             Instance = this;
 
             _chatHubClient = new ChatHubClient(this);
+            _chatHubClient.AfterJoinHub += AfterJoinChatHub;
+            _chatHubClient.BeforeLeaveHub += BeforeLeaveChatHub;
+
             MagicOnionNetwork.RegisterHubClient(_chatHubClient);
 
             _messageList = new FixedSizeQueue<ChatMessage>(20);
@@ -38,10 +41,20 @@ namespace MagicOnionExample.ActionGame.Client
             }
         }
 
+        void AfterJoinChatHub()
+        {
+            SendMessageAsync("***** Join room *****");
+        }
+
+        void BeforeLeaveChatHub()
+        {
+            SendMessageAsync("***** Leave room *****");
+        }
+
         void IChatHubReceiver.OnReceivedMessage(ChatMessage message)
         {
             _messageList.Enqueue(message);
-            OnReceivedChatMessage(message);
+            OnReceivedChatMessage?.Invoke(message);
         }
 
         void IChatHubReceiver.OnJoin(Player player)

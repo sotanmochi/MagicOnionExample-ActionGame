@@ -68,7 +68,7 @@ namespace MagicOnionExample.ActionGame.Client
             ChatMessage[] messageList = ChatHubComponent.Instance.MessageList.ToArray();
             foreach (ChatMessage chatmsg in messageList)
             {
-                string msg = chatmsg.PlayerName + "：" + chatmsg.MessageText + "\n";
+                string msg = chatmsg.PlayerName + ":\n" + "  " + chatmsg.MessageText + "\n";
                 sb.Insert(0, msg);
             }
 

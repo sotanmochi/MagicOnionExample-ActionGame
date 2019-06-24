@@ -420,8 +420,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 363005813}
-  - component: {fileID: 363005812}
   - component: {fileID: 363005814}
+  - component: {fileID: 363005812}
   m_Layer: 0
   m_Name: HubClients
   m_TagString: Untagged
@@ -438,7 +438,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 363005811}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79a1f0c4f38263444b3ad40c483726c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d8873f33a66aea4cb048a6f3cc2cfcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &363005813
@@ -1814,7 +1814,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f2653db7af87b14d84897264d30c6c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Client: {fileID: 363005812}
   Host: {fileID: 2024318724}
   Port: {fileID: 288307105}
   ConnectButton: {fileID: 2055400660}

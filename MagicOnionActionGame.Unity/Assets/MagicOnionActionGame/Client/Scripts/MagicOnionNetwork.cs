@@ -12,11 +12,14 @@ namespace MagicOnionExample
         Task DisconnectHubAsync();
         Task<JoinResult> JoinHubAsync(string roomName, string playerName, string userId);
         void LeaveHubAsync();
+        void AfterJoinHub();
+        void BeforeLeaveHub();
     }
 
     public class MagicOnionNetwork
     {
-        public static Player LocalPlayer;
+        public static Player LocalPlayer { get { return _localPlayer; } }
+        private static Player _localPlayer;
 
         public static bool IsConnected
         {
@@ -119,6 +122,7 @@ namespace MagicOnionExample
             }
             else
             {
+                // Join hubs
                 List<Task<JoinResult>> taskList = new List<Task<JoinResult>>();
                 foreach (IHubClient hubClient in _hubClientSet)
                 {
@@ -137,13 +141,24 @@ namespace MagicOnionExample
 
                     if (joinResult.LocalPlayer.ActorNumber >= 0)
                     {
-                        LocalPlayer = joinResult.LocalPlayer;
+                        _localPlayer = joinResult.LocalPlayer;
                         Debug.Log("LocalPlayer.ActorNumber: " + joinResult.LocalPlayer.ActorNumber);
                     }
                     else
                     {
                         return false;
                     }
+
+                    // After join hubs
+                    List<Task> afterTaskList = new List<Task>();
+                    foreach (IHubClient hubClient in _hubClientSet)
+                    {
+                        afterTaskList.Add(Task.Run(() =>
+                        {
+                            hubClient.AfterJoinHub();
+                        }));
+                    }
+                    await Task.WhenAll(afterTaskList);
                 }
             }
 
@@ -154,6 +169,18 @@ namespace MagicOnionExample
         {
             if (LocalPlayer != null)
             {
+                // Before leave hubs
+                List<Task> beforeTaskList = new List<Task>();
+                foreach (IHubClient hubClient in _hubClientSet)
+                {
+                    beforeTaskList.Add(Task.Run(() =>
+                    {
+                        hubClient.BeforeLeaveHub();
+                    }));
+                }
+                await Task.WhenAll(beforeTaskList);
+
+                // Leave hubs
                 List<Task> taskList = new List<Task>();
                 foreach (IHubClient hubClient in _hubClientSet)
                 {
@@ -164,7 +191,7 @@ namespace MagicOnionExample
                 }
                 await Task.WhenAll(taskList);
 
-                LocalPlayer = null;
+                _localPlayer = null;
             }
         }
     }

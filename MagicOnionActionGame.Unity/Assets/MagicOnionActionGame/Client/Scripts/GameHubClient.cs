@@ -2,40 +2,27 @@
 using MagicOnion.Client;
 using MagicOnionExample.ActionGame.ServerShared.Hubs;
 using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
+using System;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace MagicOnionExample.ActionGame.Client
 {
-    public class GameHubClient : MonoBehaviour, IHubClient, IGameHubReceiver
+    public class GameHubClient : IHubClient
     {
         IGameHub _streamingHub;
+        IGameHubReceiver _receiver;
 
-        void Awake()
-        {
-            MagicOnionNetwork.RegisterHubClient(this);
-        }
+        public Action AfterJoinHub;
+        public Action BeforeLeaveHub;
 
-        void Start()
+        public GameHubClient(IGameHubReceiver receiver)
         {
-            Debug.Log("*** Start @GameHubClient ***");
-            Debug.Log("Connected: " + MagicOnionNetwork.IsConnected);
-            Debug.Log("State: " + MagicOnionNetwork.ConnectionState);
-        }
-
-        void IGameHubReceiver.OnJoin(Player player)
-        {
-            Debug.Log("OnJoin - Player[" + player.ActorNumber + "]: " + player.Name);
-        }
-
-        void IGameHubReceiver.OnLeave(Player player)
-        {
-            Debug.Log("OnLeave - Player[" + player.ActorNumber + "]:" + player.Name);
+            this._receiver = receiver;
         }
 
         void IHubClient.ConnectHub(Channel channel)
         {
-            _streamingHub = StreamingHubClient.Connect<IGameHub, IGameHubReceiver>(channel, this);
+            _streamingHub = StreamingHubClient.Connect<IGameHub, IGameHubReceiver>(channel, _receiver);
         }
 
         async Task IHubClient.DisconnectHubAsync()
@@ -51,6 +38,16 @@ namespace MagicOnionExample.ActionGame.Client
         async void IHubClient.LeaveHubAsync()
         {
             await _streamingHub.LeaveAsync();
+        }
+
+        void IHubClient.AfterJoinHub()
+        {
+            this.AfterJoinHub?.Invoke();
+        }
+
+        void IHubClient.BeforeLeaveHub()
+        {
+            this.BeforeLeaveHub?.Invoke();
         }
     }
 }

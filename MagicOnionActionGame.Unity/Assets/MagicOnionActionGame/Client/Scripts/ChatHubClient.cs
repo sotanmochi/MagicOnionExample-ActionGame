@@ -2,6 +2,7 @@
 using MagicOnion.Client;
 using MagicOnionExample.ActionGame.ServerShared.Hubs;
 using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
+using System;
 using System.Threading.Tasks;
 
 namespace MagicOnionExample.ActionGame.Client
@@ -10,6 +11,9 @@ namespace MagicOnionExample.ActionGame.Client
     {
         IChatHub _streamingHub;
         IChatHubReceiver _receiver;
+
+        public Action AfterJoinHub;
+        public Action BeforeLeaveHub;
 
         public ChatHubClient(IChatHubReceiver receiver)
         {
@@ -39,6 +43,16 @@ namespace MagicOnionExample.ActionGame.Client
         async void IHubClient.LeaveHubAsync()
         {
             await _streamingHub.LeaveAsync();
+        }
+
+        void IHubClient.AfterJoinHub()
+        {
+            this.AfterJoinHub?.Invoke();
+        }
+
+        void IHubClient.BeforeLeaveHub()
+        {
+            this.BeforeLeaveHub?.Invoke();
         }
     }
 }

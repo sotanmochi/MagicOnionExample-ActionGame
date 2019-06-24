@@ -37,8 +37,8 @@ namespace MagicOnionExample.ActionGame.Server
 
             RoomManager.Instance.LeaveRoom(self.UserId);
 
-            await group.RemoveAsync(this.Context);
             Broadcast(group).OnLeave(self);
+            await group.RemoveAsync(this.Context);
         }
     }
 }
