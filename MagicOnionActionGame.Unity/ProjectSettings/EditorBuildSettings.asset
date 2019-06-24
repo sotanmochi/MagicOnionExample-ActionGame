@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/MagicOnionActionGame/Client/Main.unity
+    guid: af75639312281be43923ed2731257c45
   m_configObjects: {}
