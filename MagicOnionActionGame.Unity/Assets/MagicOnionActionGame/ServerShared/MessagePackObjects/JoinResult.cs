@@ -10,7 +10,5 @@ namespace MagicOnionExample.ActionGame.ServerShared.MessagePackObjects
     {
         [Key(0)]
         public Player LocalPlayer { get; set; }
-        [Key(1)]
-        public Player[] RoomPlayers { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace MagicOnionExample.ActionGame.Client
         void OnConnectClicked()
         {
             MagicOnionNetwork.Connect(Host.text, int.Parse(Port.text));
-            
+
             Debug.Log("*** OnConnectClicked @AppUI ***");
             Debug.Log("Connected: " + MagicOnionNetwork.IsConnected);
             Debug.Log("State: " + MagicOnionNetwork.ConnectionState);

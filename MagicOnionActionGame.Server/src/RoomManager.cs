@@ -56,21 +56,22 @@ namespace MagicOnionExample
             return player;
         }
 
-        public void LeaveRoom(string userId)
+        public bool LeaveRoom(string userId)
         {
             string roomName;
             RoomInfo roomInfo;
 
-            if (_playerRoomMap.ContainsKey(userId))
+            if (_playerRoomMap.TryRemove(userId, out roomName))
             {
-                _playerRoomMap.TryRemove(userId, out roomName);
                 _roomList.TryGetValue(roomName, out roomInfo);
-                
+
                 if (roomInfo != null)
                 {
-                    roomInfo.RemovePlayer(userId);
+                    return roomInfo.RemovePlayer(userId);
                 }
             }
+
+            return false;
         }
     }
 }

@@ -20,6 +20,11 @@ namespace MagicOnionExample.ActionGame.Client
             this._receiver = receiver;
         }
 
+        public async void MoveAsync(PlayerCharacterParameter param)
+        {
+            await _streamingHub.MoveAsync(param);
+        }
+
         void IHubClient.ConnectHub(Channel channel)
         {
             _streamingHub = StreamingHubClient.Connect<IGameHub, IGameHubReceiver>(channel, _receiver);

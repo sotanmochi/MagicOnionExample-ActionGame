@@ -52,10 +52,10 @@ namespace MagicOnionExample
             return _playerList.Values.ToArray();
         }
 
-        public void RemovePlayer(string userId)
+        public bool RemovePlayer(string userId)
         {
             Player player;
-            _playerList.TryRemove(userId, out player);
+            return _playerList.TryRemove(userId, out player);
         }
 
         private int FindNewActorNumber()

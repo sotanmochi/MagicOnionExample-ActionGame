@@ -6,7 +6,7 @@ namespace MagicOnionExample.ActionGame.Client
 {
     public class ChatHubComponent : MonoBehaviour, IChatHubReceiver
     {
-        public static ChatHubComponent Instance;
+        public static ChatHubComponent Instance { get { return _instance; } }
 
         public FixedSizeQueue<ChatMessage> MessageList { get { return _messageList; } }
         private FixedSizeQueue<ChatMessage> _messageList;
@@ -14,11 +14,12 @@ namespace MagicOnionExample.ActionGame.Client
         public delegate void OnReceivedMessageHandler(ChatMessage message);
         public OnReceivedMessageHandler OnReceivedChatMessage;
 
+        private static ChatHubComponent _instance;
         private ChatHubClient _chatHubClient;
 
         void Awake()
         {
-            Instance = this;
+            _instance = this;
 
             _chatHubClient = new ChatHubClient(this);
             _chatHubClient.AfterJoinHub += AfterJoinChatHub;
@@ -31,7 +32,7 @@ namespace MagicOnionExample.ActionGame.Client
 
         public void SendMessageAsync(string msgtext)
         {
-            if (MagicOnionNetwork.IsConnected)
+            if (MagicOnionNetwork.IsJoined)
             {
                 ChatMessage message = new ChatMessage();
                 message.ActorNumber = MagicOnionNetwork.LocalPlayer.ActorNumber;
@@ -53,6 +54,7 @@ namespace MagicOnionExample.ActionGame.Client
 
         void IChatHubReceiver.OnReceivedMessage(ChatMessage message)
         {
+            Debug.Log("OnReceivedMessage: " + message.MessageText);
             _messageList.Enqueue(message);
             OnReceivedChatMessage?.Invoke(message);
         }

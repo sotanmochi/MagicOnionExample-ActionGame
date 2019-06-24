@@ -4811,7 +4811,7 @@ GameObject:
   - component: {fileID: 918905476367507243}
   - component: {fileID: 918905476367507242}
   - component: {fileID: 918905476367507237}
-  - component: {fileID: 918905476367507236}
+  - component: {fileID: 2408225709971131110}
   m_Layer: 0
   m_Name: Player_Kohaku_A
   m_TagString: Untagged
@@ -5103,16 +5103,16 @@ MonoBehaviour:
   m_MoveSpeedMultiplier: 1
   m_AnimSpeedMultiplier: 1
   m_GroundCheckDistance: 0.3
---- !u!114 &918905476367507236
+--- !u!114 &2408225709971131110
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 918905476367507239}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521b611700410be45810047f0a74e899, type: 3}
+  m_Script: {fileID: 11500000, guid: 770d1be5d93cf574a934d96d2da8af41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &918905554753599309

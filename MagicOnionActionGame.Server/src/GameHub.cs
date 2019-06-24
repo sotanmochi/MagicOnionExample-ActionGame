@@ -12,6 +12,11 @@ namespace MagicOnionExample.ActionGame.Server
         IGroup group;
         Player self;
 
+        public async Task MoveAsync(PlayerCharacterParameter param)
+        {
+            BroadcastExceptSelf(group).OnMove(param);
+        }
+
         public async Task<JoinResult> JoinAsync(string roomName, string playerName, string userId)
         {
             Guid connectionId = this.Context.ContextId;
@@ -23,22 +28,22 @@ namespace MagicOnionExample.ActionGame.Server
             if (self.ActorNumber >= 0)
             {
                 this.group = await Group.AddAsync(roomName);
+                BroadcastExceptSelf(group).OnJoin(self);
+                // Broadcast(group).OnJoin(self);
             }
 
-            // BroadcastExceptSelf(room).OnJoin(self);
-            Broadcast(group).OnJoin(self);
-
-            return new JoinResult() { LocalPlayer = self, RoomPlayers = roomPlayers };
+            return new JoinResult() { LocalPlayer = self };
         }
 
         public async Task LeaveAsync()
         {
             GrpcEnvironment.Logger.Debug("LeavAsync @GameHub");
 
-            RoomManager.Instance.LeaveRoom(self.UserId);
-
-            Broadcast(group).OnLeave(self);
-            await group.RemoveAsync(this.Context);
+            if (RoomManager.Instance.LeaveRoom(self.UserId))
+            {
+                await group.RemoveAsync(this.Context);
+                Broadcast(group).OnLeave(self);
+            }
         }
     }
 }

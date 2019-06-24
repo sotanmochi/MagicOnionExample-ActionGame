@@ -37,6 +37,9 @@ namespace MagicOnionExample
             }
         }
 
+        public static bool IsJoined { get { return _isJoined; } }
+        private static bool _isJoined;
+
         private static Channel _channel;
         private static HashSet<IHubClient> _hubClientSet;
 
@@ -115,7 +118,7 @@ namespace MagicOnionExample
                 return false;
             }
 
-            if (LocalPlayer != null && LocalPlayer.ActorNumber >= 0)
+            if (IsJoined && LocalPlayer != null && LocalPlayer.ActorNumber >= 0)
             {
                 Debug.Log("Already joined!!");
                 Debug.Log("LocalPlayer.ActorNumber: " + LocalPlayer.ActorNumber);
@@ -137,12 +140,10 @@ namespace MagicOnionExample
                 {
                     JoinResult joinResult = result[0];
 
-                    Debug.Log("RoomPlayers: " + joinResult.RoomPlayers.Length);
-
                     if (joinResult.LocalPlayer.ActorNumber >= 0)
                     {
                         _localPlayer = joinResult.LocalPlayer;
-                        Debug.Log("LocalPlayer.ActorNumber: " + joinResult.LocalPlayer.ActorNumber);
+                        _isJoined = true;
                     }
                     else
                     {
@@ -167,7 +168,7 @@ namespace MagicOnionExample
 
         public static async void LeaveAsync()
         {
-            if (LocalPlayer != null)
+            if (IsJoined && LocalPlayer != null)
             {
                 // Before leave hubs
                 List<Task> beforeTaskList = new List<Task>();
@@ -180,6 +181,9 @@ namespace MagicOnionExample
                 }
                 await Task.WhenAll(beforeTaskList);
 
+                _isJoined = false;
+                _localPlayer = null;
+
                 // Leave hubs
                 List<Task> taskList = new List<Task>();
                 foreach (IHubClient hubClient in _hubClientSet)
@@ -190,8 +194,6 @@ namespace MagicOnionExample
                     }));
                 }
                 await Task.WhenAll(taskList);
-
-                _localPlayer = null;
             }
         }
     }
