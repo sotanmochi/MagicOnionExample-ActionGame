@@ -14,6 +14,7 @@ namespace MagicOnionExample
         void LeaveHubAsync();
         void AfterJoinHub();
         void BeforeLeaveHub();
+        void AfterLeaveHub();
     }
 
     public class MagicOnionNetwork
@@ -74,6 +75,9 @@ namespace MagicOnionExample
 
         public static async void DisconnectAsync()
         {
+            // ToDo: Leave hubs
+
+            // Disconnect hubs
             List<Task> taskList = new List<Task>();
             foreach (IHubClient hubClient in _hubClientSet)
             {
@@ -166,7 +170,7 @@ namespace MagicOnionExample
             return true;
         }
 
-        public static async void LeaveAsync()
+        public static async Task LeaveAsync()
         {
             if (IsJoined && LocalPlayer != null)
             {
@@ -194,6 +198,17 @@ namespace MagicOnionExample
                     }));
                 }
                 await Task.WhenAll(taskList);
+
+                // After leave hubs
+                List<Task> afterTaskList = new List<Task>();
+                foreach (IHubClient hubClient in _hubClientSet)
+                {
+                    afterTaskList.Add(Task.Run(() =>
+                    {
+                        hubClient.AfterLeaveHub();
+                    }));
+                }
+                await Task.WhenAll(afterTaskList);
             }
         }
     }

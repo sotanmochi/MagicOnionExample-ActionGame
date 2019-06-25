@@ -14,6 +14,7 @@ namespace MagicOnionExample.ActionGame.Client
 
         public Action AfterJoinHub;
         public Action BeforeLeaveHub;
+        public Action AfterLeaveHub;
 
         public GameHubClient(IGameHubReceiver receiver)
         {
@@ -53,6 +54,11 @@ namespace MagicOnionExample.ActionGame.Client
         void IHubClient.BeforeLeaveHub()
         {
             this.BeforeLeaveHub?.Invoke();
+        }
+
+        void IHubClient.AfterLeaveHub()
+        {
+            this.AfterLeaveHub?.Invoke();
         }
     }
 }

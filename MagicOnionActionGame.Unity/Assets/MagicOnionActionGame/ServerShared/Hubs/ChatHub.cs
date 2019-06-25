@@ -7,6 +7,7 @@ namespace MagicOnionExample.ActionGame.ServerShared.Hubs
     public interface IChatHub : IStreamingHub<IChatHub, IChatHubReceiver>
     {
         Task SendMessageAsync(ChatMessage message);
+        Task SendMessageExceptSelfAsync(ChatMessage message);
         Task<JoinResult> JoinAsync(string roomName, string playerName, string userId);
         Task LeaveAsync();
     }

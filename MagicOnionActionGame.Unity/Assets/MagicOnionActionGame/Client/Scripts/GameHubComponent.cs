@@ -18,6 +18,7 @@ namespace MagicOnionExample.ActionGame.Client
 
         public Action AfterJoinGameHub;
         public Action BeforeLeaveGameHub;
+        public Action AfterLeaveGameHub;
 
         private static GameHubComponent _instance;
         private GameHubClient _gameHubClient;
@@ -29,6 +30,7 @@ namespace MagicOnionExample.ActionGame.Client
             _gameHubClient = new GameHubClient(this);
             _gameHubClient.AfterJoinHub += () => AfterJoinGameHub?.Invoke();
             _gameHubClient.BeforeLeaveHub += () => BeforeLeaveGameHub?.Invoke();
+            _gameHubClient.AfterLeaveHub += () => AfterLeaveGameHub?.Invoke();
 
             MagicOnionNetwork.RegisterHubClient(_gameHubClient);
         }

@@ -42,6 +42,18 @@ namespace MagicOnionExample.ActionGame.Client
             }
         }
 
+        public void SendMessageExceptSelfAsync(string msgtext)
+        {
+            if (MagicOnionNetwork.IsJoined)
+            {
+                ChatMessage message = new ChatMessage();
+                message.ActorNumber = MagicOnionNetwork.LocalPlayer.ActorNumber;
+                message.PlayerName = MagicOnionNetwork.LocalPlayer.Name;
+                message.MessageText = msgtext;
+                _chatHubClient.SendMessageExceptSelfAsync(message);
+            }
+        }
+
         void AfterJoinChatHub()
         {
             SendMessageAsync("***** Join room *****");
@@ -49,12 +61,11 @@ namespace MagicOnionExample.ActionGame.Client
 
         void BeforeLeaveChatHub()
         {
-            SendMessageAsync("***** Leave room *****");
+            SendMessageExceptSelfAsync("***** Leave room *****");
         }
 
         void IChatHubReceiver.OnReceivedMessage(ChatMessage message)
         {
-            Debug.Log("OnReceivedMessage: " + message.MessageText);
             _messageList.Enqueue(message);
             OnReceivedChatMessage?.Invoke(message);
         }

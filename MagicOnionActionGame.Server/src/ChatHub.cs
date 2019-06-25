@@ -19,6 +19,13 @@ namespace MagicOnionExample.ActionGame.Server
             await Task.CompletedTask;
         }
 
+        public async Task SendMessageExceptSelfAsync(ChatMessage message)
+        {
+            GrpcEnvironment.Logger.Debug("SendMessageExeptSelfAsync @ChatHub");
+            BroadcastExceptSelf(group).OnReceivedMessage(message);
+            await Task.CompletedTask;
+        }
+
         public async Task<JoinResult> JoinAsync(string roomName, string playerName, string userId)
         {
             Guid connectionId = this.Context.ContextId;

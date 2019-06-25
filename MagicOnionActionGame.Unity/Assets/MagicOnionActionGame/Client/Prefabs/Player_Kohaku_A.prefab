@@ -4810,7 +4810,7 @@ GameObject:
   - component: {fileID: 963267550796210977}
   - component: {fileID: 918905476367507243}
   - component: {fileID: 918905476367507242}
-  - component: {fileID: 918905476367507237}
+  - component: {fileID: 4087420690743833804}
   - component: {fileID: 2408225709971131110}
   m_Layer: 0
   m_Name: Player_Kohaku_A
@@ -5083,7 +5083,7 @@ CapsuleCollider:
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0.75, z: 0}
---- !u!114 &918905476367507237
+--- !u!114 &4087420690743833804
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5092,7 +5092,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 918905476367507239}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce7a80d520cacc042b5fe14f373d8173, type: 3}
+  m_Script: {fileID: 11500000, guid: 31b16ef1acc069348a26994dfe672e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_MovingTurnSpeed: 360

@@ -5,10 +5,10 @@ using UnityStandardAssets.Characters.ThirdPerson;
 
 namespace MagicOnionExample.ActionGame
 {
-    [RequireComponent(typeof (ThirdPersonCharacter))]
+    [RequireComponent(typeof (ModifiedThirdPersonCharacter))]
     public class ModifiedThirdPersonUserControl : MonoBehaviour
     {
-        private ThirdPersonCharacter m_Character; // A reference to the ThirdPersonCharacter on the object
+        private ModifiedThirdPersonCharacter m_Character; // A reference to the ThirdPersonCharacter on the object
         private Transform m_Cam;                  // A reference to the main camera in the scenes transform
         private Vector3 m_CamForward;             // The current forward direction of the camera
         private Vector3 m_Move;                   // the world-relative desired move direction, calculated from the camForward and user input.
@@ -42,7 +42,7 @@ namespace MagicOnionExample.ActionGame
             }
 
             // get the third person character ( this should never be null due to require component )
-            m_Character = GetComponent<ThirdPersonCharacter>();
+            m_Character = GetComponent<ModifiedThirdPersonCharacter>();
         }
 
 

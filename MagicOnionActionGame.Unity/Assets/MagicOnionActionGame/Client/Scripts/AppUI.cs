@@ -51,9 +51,9 @@ namespace MagicOnionExample.ActionGame.Client
             Debug.Log("Join success: " + result);
         }
 
-        void OnLeaveClicked()
+        async void OnLeaveClicked()
         {
-            MagicOnionNetwork.LeaveAsync();
+            await MagicOnionNetwork.LeaveAsync();
         }
 
         void OnSendClicked()

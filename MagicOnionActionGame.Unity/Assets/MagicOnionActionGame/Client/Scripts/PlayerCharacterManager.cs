@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
+﻿using MagicOnionExample.ActionGame.ServerShared.MessagePackObjects;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
 
@@ -16,19 +17,21 @@ namespace MagicOnionExample.ActionGame.Client
         [SerializeField]
         private GameObject RemotePlayerRoot;
 
-        private Dictionary<int, ThirdPersonCharacter> _remotePlayers;
+        private Dictionary<int, ModifiedThirdPersonCharacter> _remotePlayers;
         private static PlayerCharacterManager _instance;
+        private SynchronizationContext _unityMainThread;
 
         void Awake()
         {
             _instance = this;
-            _remotePlayers = new Dictionary<int, ThirdPersonCharacter>();
+            _remotePlayers = new Dictionary<int, ModifiedThirdPersonCharacter>();
+            _unityMainThread = SynchronizationContext.Current;
         }
 
         void Start()
         {
             GameHubComponent.Instance.AfterJoinGameHub += AfterJoinGameHub;
-            GameHubComponent.Instance.BeforeLeaveGameHub += BeforeLeaveGameHub;
+            GameHubComponent.Instance.AfterLeaveGameHub += AfterLeaveGameHub;
             GameHubComponent.Instance.OnMovePlayerCharacter += OnMoveRemotePlayerCharacter;
             GameHubComponent.Instance.OnLeave += OnLeave;
 
@@ -58,7 +61,7 @@ namespace MagicOnionExample.ActionGame.Client
 
         private void OnMoveRemotePlayerCharacter(PlayerCharacterParameter param)
         {
-            ThirdPersonCharacter remotePlayer;
+            ModifiedThirdPersonCharacter remotePlayer;
             _remotePlayers.TryGetValue(param.ActorNumber, out remotePlayer);
             if (remotePlayer != null)
             {
@@ -72,13 +75,13 @@ namespace MagicOnionExample.ActionGame.Client
                 go.transform.SetParent(RemotePlayerRoot.transform);
                 go.name = "RemotePlayer[" + param.ActorNumber + "]_" + param.PlayerName;
 
-                _remotePlayers[param.ActorNumber] = go.GetComponent<ThirdPersonCharacter>();
+                _remotePlayers[param.ActorNumber] = go.GetComponent<ModifiedThirdPersonCharacter>();
             }
         }
 
         private void OnLeave(Player player)
         {
-            ThirdPersonCharacter remotePlayer;
+            ModifiedThirdPersonCharacter remotePlayer;
             _remotePlayers.TryGetValue(player.ActorNumber, out remotePlayer);
             if (remotePlayer != null)
             {
@@ -96,13 +99,18 @@ namespace MagicOnionExample.ActionGame.Client
             GameHubComponent.Instance.MoveAsync(param);
         }
 
-        private void BeforeLeaveGameHub()
+        private void AfterLeaveGameHub()
         {
-            // foreach(var remotePlayer in _remotePlayers.Values)
-            // {
-            //     DestroyImmediate(remotePlayer.gameObject);
-            // }
-            // _remotePlayers.Clear();
+            Debug.Log("AfterLeaveGameHub");
+            _unityMainThread.Post((_) =>
+            {
+                foreach(var remotePlayer in _remotePlayers.Values)
+                {
+                    DestroyImmediate(remotePlayer.gameObject);
+                }
+                _remotePlayers.Clear();
+            }
+            , null);
         }
     }
 }
