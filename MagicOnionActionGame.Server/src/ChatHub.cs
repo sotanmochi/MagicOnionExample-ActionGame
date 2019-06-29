@@ -11,6 +11,7 @@ namespace MagicOnionExample.ActionGame.Server
     {
         IGroup group;
         Player self;
+        string currentRoom;
 
         public async Task SendMessageAsync(ChatMessage message)
         {
@@ -34,6 +35,9 @@ namespace MagicOnionExample.ActionGame.Server
             self = RoomManager.Instance.JoinOrCreateRoom(roomName, playerName, userId);
             Player[] roomPlayers = RoomManager.Instance.GetRoom(roomName).GetPlayers();
 
+            GrpcEnvironment.Logger.Debug("ChatHub - PlayerCount: " + roomPlayers.Length);
+            currentRoom = roomName;
+
             if (self.ActorNumber >= 0)
             {
                 this.group = await Group.AddAsync(roomName);
@@ -48,11 +52,12 @@ namespace MagicOnionExample.ActionGame.Server
         {
             GrpcEnvironment.Logger.Debug("LeavAsync @ChatHub");
 
-            if (RoomManager.Instance.LeaveRoom(self.UserId))
-            {
-                await group.RemoveAsync(this.Context);
-                Broadcast(group).OnLeave(self);
-            }
+            RoomManager.Instance.LeaveRoom(self.UserId);
+            Player[] roomPlayers = RoomManager.Instance.GetRoom(currentRoom).GetPlayers();
+            GrpcEnvironment.Logger.Debug("ChatHub - PlayerCount: " + roomPlayers.Length);
+
+            await group.RemoveAsync(this.Context);
+            Broadcast(group).OnLeave(self);
         }
     }
 }

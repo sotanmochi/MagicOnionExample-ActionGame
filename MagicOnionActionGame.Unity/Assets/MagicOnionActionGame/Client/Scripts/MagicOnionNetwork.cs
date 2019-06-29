@@ -73,9 +73,13 @@ namespace MagicOnionExample
             }
         }
 
-        public static async void DisconnectAsync()
+        public static async Task DisconnectAsync()
         {
-            // ToDo: Leave hubs
+            Debug.Log("DisconnectAsync Start");
+
+            // Leave hubs
+            await LeaveAsync();
+            Debug.Log("LeaveAsync has finished @DisconnectAsync");
 
             // Disconnect hubs
             List<Task> taskList = new List<Task>();
@@ -88,12 +92,15 @@ namespace MagicOnionExample
             }
             await Task.WhenAll(taskList);
 
+            Debug.Log("DisconnectHubAsync End");
             _hubClientSet.Clear();
 
             if (_channel != null)
             {
                 await _channel.ShutdownAsync();
             }
+
+            Debug.Log("DisconnectAsync End");
         }
 
         public static bool RegisterHubClient(IHubClient client)
@@ -172,6 +179,8 @@ namespace MagicOnionExample
 
         public static async Task LeaveAsync()
         {
+            Debug.Log("LeaveAsync Start");
+
             if (IsJoined && LocalPlayer != null)
             {
                 // Before leave hubs
@@ -210,6 +219,8 @@ namespace MagicOnionExample
                 }
                 await Task.WhenAll(afterTaskList);
             }
+
+            Debug.Log("LeaveAsync End");
         }
     }
 }

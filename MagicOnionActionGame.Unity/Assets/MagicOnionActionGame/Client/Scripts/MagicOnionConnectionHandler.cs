@@ -16,9 +16,14 @@ namespace MagicOnionExample
             DontDestroyOnLoad(this.gameObject);
         }
 
-        void OnApplicationQuit()
+        async void OnApplicationQuit()
         {
-            MagicOnionNetwork.DisconnectAsync();
+            if (MagicOnionNetwork.IsConnected)
+            {
+                Application.CancelQuit();
+                await MagicOnionNetwork.DisconnectAsync();
+                Application.Quit();
+            }
         }
     }
 }
