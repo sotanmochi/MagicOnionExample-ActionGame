@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="MagicOnion" Version="2.1.2" />
     <PackageReference Include="MessagePack" Version="1.7.3.7" />
-    <PackageReference Include="MessagePack.UnityShims" Version="1.7.3.7" />
+    <PackageReference Include="MessagePack.UnityShims" Version="1.9.3" />
   </ItemGroup>
 
 </Project>
